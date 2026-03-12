@@ -79,7 +79,8 @@ Worktrees.utils = {}
 Worktrees.utils.switch_worktree = function(path, change_root)
     if change_root == nil then change_root = true end
 
-    local from_path = vim.fs.normalize(git.get_worktree_root() or "")
+    local worktree_root = git.get_worktree_root()
+    local from_path = worktree_root and vim.fs.normalize(worktree_root) or "(root)"
     local worktrees = git.get_worktrees()
     if not worktrees or vim.tbl_count(worktrees) == 0 then
         H.notify("No git worktrees found in this repo", vim.log.levels.ERROR)
@@ -139,7 +140,9 @@ Worktrees.utils.switch_worktree = function(path, change_root)
     vim.cmd.clearjumps()
 
     if Worktrees.config.on_switch then
-        Worktrees.config.on_switch(from_path, normalized_path)
+        vim.schedule(function()
+            Worktrees.config.on_switch(from_path, normalized_path)
+        end)
     end
 
     return true
@@ -214,7 +217,9 @@ Worktrees.utils.create_worktree = function(path, branch, switch)
     )
 
     if Worktrees.config.on_create then
-        Worktrees.config.on_create(worktree_path)
+        vim.schedule(function()
+            Worktrees.config.on_create(worktree_path)
+        end)
     end
 
     -- Check if this is the first worktree, if so switch to it
@@ -256,7 +261,9 @@ Worktrees.utils.delete_worktree = function(path)
     H.notify("Deleted worktree at: " .. path, vim.log.levels.INFO)
 
     if Worktrees.config.on_delete then
-        Worktrees.config.on_delete(path)
+        vim.schedule(function()
+            Worktrees.config.on_delete(path)
+        end)
     end
 
     return true
