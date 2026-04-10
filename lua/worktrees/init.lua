@@ -80,7 +80,7 @@ Worktrees.utils.switch_worktree = function(path, change_root)
     if change_root == nil then change_root = true end
 
     local worktree_root = git.get_worktree_root()
-    local from_path = worktree_root and vim.fs.normalize(worktree_root) or "(root)"
+    local from_path = worktree_root and vim.fs.normalize(worktree_root) or nil
     local worktrees = git.get_worktrees()
     if not worktrees or vim.tbl_count(worktrees) == 0 then
         H.notify("No git worktrees found in this repo", vim.log.levels.ERROR)
